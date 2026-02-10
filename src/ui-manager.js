@@ -55,82 +55,50 @@ class UIManager {
 
 // Add this method to UIManager class
 
-showContactWarning() {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'chatbot-message chatbot-message-ai chatbot-system-message';
-    messageDiv.innerHTML = `
-        <div class="chatbot-message-avatar">
-            🤖
-        </div>
-        <div class="chatbot-message-bubble" style="background: #FFF7ED; border-left: 4px solid #F97316;">
-            <div class="chatbot-message-content" style="color: #9A3412;">
-                <strong>⚠️ Contact Details Required</strong><br>
-                Since you haven't provided your contact details, we won't be able to register you or send you any notifications. Please share your contact information!
-            </div>
-        </div>
-    `;
-    
-    this.messagesContainer.appendChild(messageDiv);
-    this._scrollToBottom();
-}
-
-
-    showExpiryMessage(isArchived = false) {
+    showContactWarning() {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'chatbot-message chatbot-message-ai chatbot-system-message';
-
-        if (isArchived) {
-            // Session was archived to Postgres/Dataverse
-            messageDiv.innerHTML = `
-                <div class="chatbot-message-avatar">
-                    🤖
-                </div>
-                <div class="chatbot-message-bubble" style="background: #FEF3C7; border-left: 4px solid #F59E0B;">
-                    <div class="chatbot-message-content" style="color: #92400E;">
-                        <strong>💾 Session Archived</strong><br>
-                        Your previous conversation has been saved. A new session has been started. Feel free to continue chatting!
-                    </div>
-                </div>
-            `;
-        } else {
-            // Session expired due to inactivity
-            messageDiv.innerHTML = `
-                <div class="chatbot-message-avatar">
-                    🤖
-                </div>
-                <div class="chatbot-message-bubble" style="background: #FEF2F2; border-left: 4px solid #EF4444;">
-                    <div class="chatbot-message-content" style="color: #991B1B;">
-                        <strong>⏰ Session Expired</strong><br>
-                        Your chat session ended due to inactivity. A new session has been started. Feel free to continue chatting!
-                    </div>
-                </div>
-            `;
-        }
-
-        this.messagesContainer.appendChild(messageDiv);
-        this._scrollToBottom();
-
-        if (!this.isOpen) {
-            this.open();
-        }
-    }
-
-    showError(message) {
-        if (!this.messagesContainer) return;
-
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'chatbot-message chatbot-message-ai';
-        errorDiv.innerHTML = `
-            <div class="chatbot-message-avatar">
-                🤖
-            </div>
-            <div class="chatbot-message-bubble" style="background: #FEF2F2; border: 1px solid #FCA5A5;">
-                <div class="chatbot-message-content" style="color: #B91C1C; font-weight: 500;">
-                    ${message}
+        messageDiv.innerHTML = `
+            <div class="chatbot-message-avatar">🤖</div>
+            <div class="chatbot-message-bubble">
+                <div class="chatbot-message-content" style="white-space: pre-wrap;">
+⚠️ Contact Details Required
+Since you haven't provided your contact details, we won't be able to register you or send notifications.
                 </div>
             </div>
         `;
+        this.messagesContainer.appendChild(messageDiv);
+        this._scrollToBottom();
+    }
 
+
+     showExpiryMessage(isArchived = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chatbot-message chatbot-message-ai chatbot-system-message';
+        messageDiv.innerHTML = `
+            <div class="chatbot-message-avatar">🤖</div>
+            <div class="chatbot-message-bubble">
+                <div class="chatbot-message-content" style="white-space: pre-wrap;">
+${isArchived ? '💾 Session Archived\nYour conversation has been saved.' : '⏰ Session Expired\nA new session has started.'}
+                </div>
+            </div>
+        `;
+        this.messagesContainer.appendChild(messageDiv);
+        this._scrollToBottom();
+    }
+
+
+   showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'chatbot-message chatbot-message-ai';
+        errorDiv.innerHTML = `
+            <div class="chatbot-message-avatar">🤖</div>
+            <div class="chatbot-message-bubble">
+                <div class="chatbot-message-content" style="white-space: pre-wrap;">
+${message}
+                </div>
+            </div>
+        `;
         this.messagesContainer.appendChild(errorDiv);
         this._scrollToBottom();
     }
@@ -234,46 +202,41 @@ showContactWarning() {
         widget.style.height = this.config.height || '640px';
     }
 
-    addUserMessage(text) {
+   addUserMessage(text) {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'chatbot-message chatbot-message-user';
         messageDiv.innerHTML = `
-            <div class="chatbot-message-avatar" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
-                🎓
+            <div class="chatbot-message-avatar">🎓</div>
+            <div class="chatbot-message-content" style="white-space: pre-wrap;">
+${this._escapeHtml(text)}
             </div>
-            <div class="chatbot-message-content">${this._escapeHtml(text)}</div>
         `;
-
         this.messagesContainer.appendChild(messageDiv);
         this._scrollToBottom();
     }
+
 
     startAIMessage() {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'chatbot-message chatbot-message-ai';
         messageDiv.innerHTML = `
-            <div class="chatbot-message-avatar">
-                🤖
-            </div>
+            <div class="chatbot-message-avatar">🤖</div>
             <div class="chatbot-message-bubble">
-                <div class="chatbot-message-content"></div>
+                <div class="chatbot-message-content" style="white-space: pre-wrap;"></div>
             </div>
         `;
-
         this.messagesContainer.appendChild(messageDiv);
         this.currentAIMessageElement = messageDiv.querySelector('.chatbot-message-content');
         this._scrollToBottom();
-
         return this.currentAIMessageElement;
     }
 
-    appendToAIMessage(token) {
+   appendToAIMessage(token) {
         if (this.currentAIMessageElement) {
             this.currentAIMessageElement.textContent += token;
             this._scrollToBottom();
         }
     }
-
     finishAIMessage() {
         this.currentAIMessageElement = null;
     }
