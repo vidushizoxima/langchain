@@ -56,7 +56,22 @@ class UIManager {
 // Add this method to UIManager class
 
 showContactWarning() {
-    // Contact warning disabled
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chatbot-message chatbot-message-ai chatbot-system-message';
+    messageDiv.innerHTML = `
+        <div class="chatbot-message-avatar">
+            🤖
+        </div>
+        <div class="chatbot-message-bubble" style="background: #FFF7ED; border-left: 4px solid #F97316;">
+            <div class="chatbot-message-content" style="color: #9A3412;">
+                <strong>⚠️ Contact Details Required</strong><br>
+                Since you haven't provided your contact details, we won't be able to register you or send you any notifications. Please share your contact information!
+            </div>
+        </div>
+    `;
+    
+    this.messagesContainer.appendChild(messageDiv);
+    this._scrollToBottom();
 }
 
 
