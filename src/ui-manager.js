@@ -207,7 +207,7 @@ ${message}
         messageDiv.className = 'chatbot-message chatbot-message-user';
         messageDiv.innerHTML = `
             <div class="chatbot-message-avatar">🎓</div>
-            <div class="chatbot-message-content" style="white-space: pre-wrap;">
+            <div class="chatbot-message-content";">
 ${this._escapeHtml(text)}
             </div>
         `;
