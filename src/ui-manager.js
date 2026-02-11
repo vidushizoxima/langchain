@@ -27,6 +27,8 @@ class UIManager {
         this.toggleButton = null;
         this.isOpen = false;
         this.currentAIMessageElement = null;
+        this.typewriterQueue = [];
+        this.isTyping = false;
     }
 
     init() {
@@ -233,12 +235,47 @@ ${this._escapeHtml(text)}
 
    appendToAIMessage(token) {
         if (this.currentAIMessageElement) {
-            this.currentAIMessageElement.textContent += token;
-            this._scrollToBottom();
+            this.typewriterQueue.push(token);
+            if (!this.isTyping) {
+                this._processTypewriterQueue();
+            }
         }
     }
+
+    _processTypewriterQueue() {
+        if (this.typewriterQueue.length === 0) {
+            this.isTyping = false;
+            return;
+        }
+
+        this.isTyping = true;
+        const text = this.typewriterQueue.shift();
+        let index = 0;
+
+        const typeNextChar = () => {
+            if (index < text.length && this.currentAIMessageElement) {
+                this.currentAIMessageElement.textContent += text[index];
+                index++;
+                this._scrollToBottom();
+                setTimeout(typeNextChar, 30); // Adjust speed here (30ms per character)
+            } else {
+                this._processTypewriterQueue();
+            }
+        };
+
+        typeNextChar();
+    }
+
     finishAIMessage() {
-        this.currentAIMessageElement = null;
+        // Wait for typewriter to finish before clearing
+        const waitForTyping = () => {
+            if (this.isTyping || this.typewriterQueue.length > 0) {
+                setTimeout(waitForTyping, 100);
+            } else {
+                this.currentAIMessageElement = null;
+            }
+        };
+        waitForTyping();
     }
 
     showTypingIndicator() {
